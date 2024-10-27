@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner - </title>
+    <style>
+body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            justify-content:space-evenly;
+            align-items:center;
+            padding: 20px;
+        }
+        .navbar b {
+            color: #000;
+            font-weight:1;
+            font-size: 200%;
+            
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px;
+            text-align: center;
+
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .navbar .icon {
+            display: none;
+        }
+        @media screen and (max-width: 400px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .navbar a,b:not(:first-child) {
+                display: none;
+            }
+            .navbar a.icon {
+                float: right;
+                display: block;
+            }
+            .navbar.responsive {
+                position: relative;
+            }
+            .navbar.responsive .icon {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+            .navbar.responsive a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            font-weight: 700;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+        h1 {
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        li {
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        ul.shopping-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .shopping-item {
+            display: flex;
+            width: 70%;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            margin-bottom:10px;
+        }
+        .shopping-checkbox {
+            margin-right: 10px;
+        }
+        .shopping-label {
+            font-weight: bold;
+        }
+        .newList {
+        display: block;
+        margin: 30px auto;
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #FF5A5F;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .newList:hover {
+        background-color: #D53F43;
+      }
+   
+      
+
+.pull_delete.trans {
+    transition: all 0.4s;
+}
+
+.pull_delete .pd_btn {
+
+    
+    display: block !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 2.5rem !important;
+    font-size: 0.4rem !important;
+    background: #ff411c !important;
+    color: #ffffff !important;
+    text-align: center !important;
+}
+.pd_btn{
+    visibility: hidden;
+}
+
+.pull_delete .pd_btn::before {
+    
+    content: 'DELETE';
+    font-style: normal !important;
+    font-size: 0.4rem !important;
+}
+
+
+    </style>
+</head>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+<script>
+    function toggleMenu() {
+        var navbar = document.getElementById("myNavbar");
+        if (navbar.className === "navbar") {
+            navbar.className += " responsive";
+        } else {
+            navbar.className = "navbar";
+        }
+    }
+</script>
+<body>
+    <div class="navbar" id="myNavbar">
+        <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">
+            &#9776;
+        </a>
+        <a href="index.html">Home</a>
+        <b>|</b>
+        <a href="ingredients.html">Ingredients</a>
+        <b>|</b>
+        <a href="meal-list-edit.html">Add/Edit Meal</a>
+        <b>|</b>
+        <a href="shopping.html">Shopping</a>
+    </div>
+
+    <script>
+        function generateList() {
+            const weeklyIngred = JSON.parse(localStorage.getItem("Ingredients"));
+
+            const shoppingList = document.querySelector(".shopping-list");
+
+            weeklyIngred.forEach(ingredient => {
+
+
+                //console.log(localStorage.getItem(ingredient) === false)
+                if(localStorage.getItem(ingredient) == 'false' || localStorage.getItem(ingredient) == null) {
+
+                    const listItem = document.createElement("li");
+                    listItem.className = "shopping-item pull_delete";
+                    const label = document.createElement("label");
+                    label.className = "shopping-label";
+                    label.htmlFor = ingredient;
+                    label.textContent = ingredient;
+                    
+                    listItem.appendChild(label);
+                    shoppingList.appendChild(listItem);
+                }
+            })
+        }
+        
+ (function(win, $) {
+    var startX, // 起始点X
+        startY, // 起始点Y
+        pullX,  // 结束点X
+        pullY,  // 结束点Y
+        moveX,  // X轴拖动距离
+        moveY,  // Y轴拖动距离
+        rem,    // css单位
+        btn,    // 删除按钮宽度
+        threshold; // 拖动阈值
+    var _this;
+
+    /**
+     *
+     * @param $Dom
+     * @param callback
+     * @constructor
+     */
+    var PullDelete = function ($Dom, callback) {
+        _this = this;
+        rem = parseFloat($('html').css('font-size').replace('px', '')),
+        btn = 2.5 * rem;
+        threshold = btn *5;
+        if ($Dom instanceof jQuery && $Dom.hasClass('pull_delete')) {
+            $Dom.append('<i class="pd_btn"></i>');
+            _this.addPullListener($Dom, callback);
+        }
+    }
+
+
+    PullDelete.prototype = {
+        constructor: PullDelete,
+        addPullListener: function($Dom, callback) {
+            $Dom.on('touchstart', function (e) {
+                startX = e.originalEvent.targetTouches[0].pageX;
+                startY = e.originalEvent.targetTouches[0].pageY;
+                $(this).removeClass('trans');
+                $(this).siblings().addClass('trans').css({transform: 'translateX(0)'}); // 收起其他项
+                $Dom[0].style.backgroundColor = 'pink'
+                    $Dom[0].style.opacity = 0.7
+            });
+            $Dom.on('touchmove', function (e) {
+                pullX = e.originalEvent.targetTouches[0].pageX;
+                pullY = e.originalEvent.targetTouches[0].pageY;
+                moveX = (startX - pullX) * 0.8;
+                moveY = (startY - pullY) * 0.8;
+                
+                // 阻止纵向推拽
+                if (Math.abs(moveY) > Math.abs(moveX)) {
+                    return;
+                }
+                if (moveX <= btn) {
+                    $(this).css({transform: 'translateX(-' + moveX + 'px)'});
+                }
+            });
+            $Dom.on('touchend', function (e) {
+                var trans = _this.transverseShift($(this)),
+                    viewTrans = trans >= threshold && trans < btn ? btn : 0; // 阈值范围内视为有效推拽
+                $(this).addClass('trans').css({transform: 'translateX(-' + viewTrans + 'px)'});
+                if(trans>5) {
+
+                    $Dom.remove()
+                } else {
+                    $Dom[0].style.backgroundColor = ''
+                    $Dom[0].style.opacity = 1
+                }
+                // 点击删除
+                if (e.target.className == 'pd_btn') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (callback) {
+
+                        callback($Dom);
+                    }
+                }
+            });
+        },
+        transverseShift: function($dom) {
+            if (!$dom instanceof jQuery) {
+                return;
+            }
+            var trans = $dom.css('transform');
+            if (trans.indexOf('matrix') > -1) {
+                return Math.abs(trans.split(',')[4]) || 0;
+            } else {
+                return Math.abs(trans.replace(/[^\d\.]/g, '')) || 0;
+            }
+        }
+    }
+
+    $.fn.extend({
+        pulldelete: function(callback){
+            this.each(function(){
+                new PullDelete($(this), callback);
+            });
+            return this;
+        }
+    });
+
+    win.PullDelete = PullDelete;
+})(window, jQuery)
+
+
+        $(function(){
+            $('.pull_delete').pulldelete(function($dom){
+            console.log('click delete');
+        $dom.remove();
+
+        });
+
+    })
+
+    </script>
+    <h1>Meal Planner</h1>
+    
+    <h2>Shopping</h2>
+    <ul class="shopping-list">
+
+    </ul>
+    <body onload="generateList()"></body>
+        
+</body>
+</html>

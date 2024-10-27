@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+      }
+
+      .navbar {
+        background-color: #333;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .navbar b {
+        color: #000;
+        font-weight: 1;
+        font-size: 200%;
+      }
+
+      .navbar a {
+        color: white;
+        text-align: center;
+
+        text-decoration: none;
+        padding: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .navbar .icon {
+        display: none;
+      }
+
+      @media screen and (max-width: 400px) {
+        .navbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .navbar a:not(:first-child) {
+          display: none;
+        }
+
+        .navbar b:not(:first-child) {
+          display: none;
+        }
+
+        .navbar a.icon {
+          float: right;
+          display: block;
+        }
+
+        .navbar.responsive {
+          position: relative;
+        }
+
+        .navbar.responsive .icon {
+          position: absolute;
+          right: 0;
+          top: 0;
+        }
+
+        .navbar.responsive a {
+          float: none;
+          display: block;
+          text-align: left;
+        }
+      }
+
+      h1,
+      h2 {
+        text-align: center;
+      }
+
+      .randomize-button {
+        display: block;
+        margin: 30px auto;
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #FF5A5F;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .randomize-button:hover {
+        background-color: #D53F43;
+      }
+
+      h1 {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: 48px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        font-weight: 700;
+        /* font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; */
+      }
+
+      li {
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        margin: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .past-day {
+        background-color: #4CAF50 !important;
+        color: white;
+      }
+
+      section.range-slider  {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        text-align: center;
+        align-items: center;
+        justify-content: space-evenly;
+        display: flex;
+        color: #333;
+      }
+
+      section.range-slider input {
+        color: #333;
+        pointer-events: none;
+        position: absolute;
+        overflow: hidden;
+        align-content:end;
+        top: 15px;
+        width: 100%;
+        outline: none;
+        height: 50px;
+        margin: 0;
+        padding: 0;
+      }
+      
+
+      section.range-slider input::-webkit-slider-thumb {
+        pointer-events: all;
+        position: relative;
+        z-index: 1;
+        outline: 0;
+      }
+
+      label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: medium;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar" id="myNavbar">
+      <a href="javascript:void(0);" class="icon" onclick="toggleMenu()"> &#9776; </a>
+      <a href="index.html">Home</a>
+      <b>|</b>
+      <a href="ingredients.html">Ingredients</a>
+      <b>|</b>
+      <a href="meal-list-edit.html">Add/Edit Meal</a>
+      <b>|</b>
+      <a href="shopping.html">Shopping</a>
+    </div>
+    <h1>Meal Planner</h1>
+    <h2>This Week's Meals</h2>
+    <ul>
+      <li class="meal-item" id="Monday">Monday: </li>
+      <li class="meal-item" id="Tuesday">Tuesday: </li>
+      <li class="meal-item" id="Wednesday">Wednesday: </li>
+      <li class="meal-item" id="Thursday">Thursday: </li>
+      <li class="meal-item" id="Friday">Friday: </li>
+      <li class="meal-item" id="Saturday">Saturday: </li>
+      <li class="meal-item" id="Sunday">Sunday: </li>
+    </ul>
+    <label id="label">25% Chicken, 25% Ground Beef, 20% Fish, 15% Steak Style, 15% Misc</label>
+      <section class="range-slider">
+          <input value="25" min="0" max="100" step="1" type="range" id="slider1" class="inSlider">
+          <input value="50" min="0" max="100" step="1" type="range" id="slider2" class="inSlider">
+          <input value="70" min="0" max="100" step="1" type="range" id="slider3" class="inSlider">
+          <input value="85" min="0" max="100" step="1" type="range" id="slider4" class="inSlider">
+          <input value="100" min="0" max="100" step="1" type="range" id="slider5" class="inSlider">
+      </section>
+    <u1>
+        <button onclick="shuffleMeals()" class="randomize-button">Randomize</button>
+    </u1>
+  </body>
+</html>
+
+   
+<script>
+  function checkLoadedMeals() {
+    weeklyLoaded = localStorage.getItem("Weekly")
+    if (weeklyLoaded == "") {
+      weeklyLoaded = []
+    }
+  }
+  checkLoadedMeals()
+  if (localStorage.getItem("fish") == undefined) {
+
+    chicken = ["Chicken Parm", "Chicken Tenders", "Baked Chicken", "Grilled Chicken", "Pulled Chicken", "Chicken Fajitas"]
+    beef = ["Spaghetti and Meatballs", "Meatball Subs", "Spaghetti", "Tacos", "Hamburgers", "Meatloaf"]
+    fish = ["Shrimp Scampi","Salmon", "Tilapia"]
+    steakStyle = ["Steak", "Steak Fajitas", "Steak Kebabs", "Beef Stew"]
+    other = ["Pulled Pork", "Pork Tenderloin", "Bratwursts","Pizza", "Chinese", "Breakfast for Dinner"]
+
+    ingred = {
+      "Chicken Parm": ["Chicken", "Panko", "Egg", "Thin Spaghetti", "Meat Sauce"],
+      "Chicken Tenders": ["Chicken", "Egg", "Flour"],
+      "Baked Chicken": ["Chicken", "Panko"],
+      "Grilled Chicken": ["Chicken", "Italian Dressing"],
+      "Pulled Chicken": ["Frozen Chicken"],
+      "Chicken Fajitas": ["Red Bell Peppers", "Yellow Bell Peppers", "Green Bell Peppers", "Chicken"],
+      "Spaghetti and Meatballs": ["Ground Beef", "Thin Spaghetti", "Meat Sauce"],
+      "Meatball Subs": ["Meatballs", "Meat Sauce"],
+      "Spaghetti": ["Ground Beef", "Thin Spaghetti", "Meat Sauce"],
+      "Tacos": ["Ground Beef", "Tortiallas", "Taco Shells"],
+      "Hamburgers": ["Ground Beef"],
+      "Meatloaf": ["Ground Beef"],
+      "Steak": ["Steak"],
+      "Steak Fajitas": ["Red Bell Peppers", "Yellow Bell Peppers", "Green Bell Peppers", "Steak"],
+      "Steak Kebabs": ["Stew Beef", "Onions", "Red Bell Peppers", "Yellow Bell Peppers", "Green Bell Peppers"],
+      "Beef Stew": ["Stew Beef", "Broth"],
+      "Shrimp Scampi": ["Thin Spaghetti", "Shrimp", "Garlic", "Butter"],
+      "Pulled Pork": ["Pork Butt"],
+      "Pork Tenderloin": ["Pork Tenderloin", "Bacon"],
+      "Bratwursts": ["Beer", "Bratwursts"],
+      "Salmon": ["Salmon", "Broccoli"],
+      "Tilapia": ["Tilapia", "Broccoli"],
+      "Pizza": ["Pizza Dough", "Pepperoni", "Motzerella", "Pizza Sauce"],
+      "Chinese": ["Chicken", "Peppers"],
+      "Breakfast for Dinner": ["Pancake Mix", "Bacon", "Eggs"]
+    }
+    localStorage.setItem("chicken", JSON.stringify(chicken))
+    localStorage.setItem("beef", JSON.stringify(beef))
+    localStorage.setItem("fish", JSON.stringify(fish))
+    localStorage.setItem("steakStyle", JSON.stringify(steakStyle))
+    localStorage.setItem("other", JSON.stringify(other))
+    localStorage.setItem("ingred", JSON.stringify(ingred))
+  }
+  function toggleMenu() {
+    var navbar = document.getElementById("myNavbar");
+    if (navbar.className === "navbar") {
+      navbar.className += " responsive";
+    } else {
+      navbar.className = "navbar";
+    }
+  }
+  if (weeklyLoaded == "" || weeklyLoaded == null) {
+    shuffleMeals()
+  } else {
+    weeklyLoaded = JSON.parse(weeklyLoaded)
+    document.getElementById("Monday").innerHTML = "Monday : " + weeklyLoaded[0]
+    document.getElementById("Tuesday").innerHTML = "Tuesday : " + weeklyLoaded[1]
+    document.getElementById("Wednesday").innerHTML = "Wednesday : " + weeklyLoaded[2]
+    document.getElementById("Thursday").innerHTML = "Thursday : " + weeklyLoaded[3]
+    document.getElementById("Friday").innerHTML = "Friday : " + weeklyLoaded[4]
+    document.getElementById("Saturday").innerHTML = "Saturday : " + weeklyLoaded[5]
+    document.getElementById("Sunday").innerHTML = "Sunday : " + weeklyLoaded[6]
+  }
+
+  function shuffleMeals() {
+    chicken = JSON.parse(localStorage.getItem("chicken"))
+    beef = JSON.parse(localStorage.getItem("beef"))
+    fish = JSON.parse(localStorage.getItem("fish"))
+    steakStyle = JSON.parse(localStorage.getItem("steakStyle"))
+    other = JSON.parse(localStorage.getItem("other"))
+    ingred = JSON.parse(localStorage.getItem("ingred"))
+
+    let weekly = [];
+    var rangeBars = document.getElementsByTagName("input");
+    var chickenPer = parseFloat(rangeBars[0].value)/100;
+    var beefPer = parseFloat(rangeBars[1].value-rangeBars[0].value)/100;
+    var fishPer = parseFloat(rangeBars[2].value-rangeBars[1].value)/100;
+    var steakPer = parseFloat(rangeBars[3].value-rangeBars[2].value)/100;
+    var otherPer = parseFloat(rangeBars[4].value-rangeBars[3].value)/100;
+
+    percents = [chickenPer,beefPer,fishPer,steakPer,otherPer]
+    total = Math.round(chickenPer*6+beefPer*6+fishPer*6+steakPer*6+otherPer*6)
+    if(total>6) {
+
+      Math.round(Math.min(percents)*6) -= 1
+      console.log(Math.round(chickenPer*6+beefPer*6+fishPer*6+steakPer*6+otherPer*6))
+      
+    } else if(total<6) {
+      Math.round(Math.max(percents)*6) += 1
+    }
+    
+
+    while(weekly.length < Math.round(chickenPer*6)) {
+      current = chicken[Math.floor(Math.random() * chicken.length)]
+      if(!weekly.includes(current)) {
+        weekly.push(current)
+      }
+    }
+    console.log( Math.round(chickenPer*6)+Math.round(beefPer*6))
+    while(weekly.length < Math.round(chickenPer*6)+Math.round(beefPer*6)) {
+      current = beef[Math.floor(Math.random() * beef.length)]
+      if(!weekly.includes(current)) {
+        weekly.push(current)
+      }
+    }
+
+    while(weekly.length < Math.round(chickenPer*6)+Math.round(beefPer*6)+Math.round(fishPer*6)) {
+      current = fish[Math.floor(Math.random() * fish.length)]
+      if(!weekly.includes(current)) {
+        weekly.push(current)
+      }
+    }
+    while(weekly.length < Math.round(chickenPer*6)+Math.round(beefPer*6)+Math.round(fishPer*6)+Math.round(steakPer*6)) {
+      current = steakStyle[Math.floor(Math.random() * steakStyle.length)]
+      if(!weekly.includes(current)) {
+        weekly.push(current)
+      }
+    }
+    while(weekly.length < 6) {
+      current = other[Math.floor(Math.random() * other.length)]
+      if(!weekly.includes(current)) {
+        weekly.push(current)
+      }
+    }
+    console.log(weekly)
+
+
+    shuffleArray(weekly);
+    weekly.push("Leftovers");
+    document.getElementById("Monday").innerHTML = "Monday : " + weekly[0]
+    document.getElementById("Tuesday").innerHTML = "Tuesday : " + weekly[1]
+    document.getElementById("Wednesday").innerHTML = "Wednesday : " + weekly[2]
+    document.getElementById("Thursday").innerHTML = "Thursday : " + weekly[3]
+    document.getElementById("Friday").innerHTML = "Friday : " + weekly[4]
+    document.getElementById("Saturday").innerHTML = "Saturday : " + weekly[5]
+    document.getElementById("Sunday").innerHTML = "Sunday : " + weekly[6]
+    let weekly_ingred = [];
+    for (let i = 0; i < weekly.length - 1; i++) {
+      let currentIng = ingred[weekly[i]];
+      for (let j = 0; j < currentIng.length; j++) {
+        if (!weekly_ingred.includes(currentIng[j])) {
+          weekly_ingred.push(currentIng[j]);
+        }
+      }
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+    localStorage.setItem("Ingredients", JSON.stringify(weekly_ingred))
+    localStorage.setItem("Weekly", JSON.stringify(weekly))
+  }
+  document.addEventListener("DOMContentLoaded", function() {
+    const currentDate = new Date();
+    const currentDay = currentDate.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const mealItems = document.querySelectorAll(".meal-item");
+    const time = new Date().getHours();
+    mealItems.forEach((item, index) => {
+      if (time >= 19) {
+        if (index < currentDay) {
+          item.classList.add("past-day");
+        }
+      } else {
+        if (index < currentDay - 1) {
+          item.classList.add("past-day");
+        }
+      }
+    });
+  });
+  
+  //let elementsArray = document.querySelectorAll(".meal-item");
+  //        elementsArray.forEach(function(elem) {
+  //          elem.addEventListener("click", function() {
+  //            showMiniImage(elem)
+  //          });
+  //        });
+//
+  //function showMiniImage(element) {
+  //  console.log(element)
+  //}
+  function getVals() {
+    // Get slider values
+    var parent = this.parentNode;
+    var slides = parent.getElementsByTagName("input");
+    var slide1 = parseFloat(slides[0].value);
+    var slide2 = parseFloat(slides[1].value);
+    var slide3 = parseFloat(slides[2].value);
+    var slide4 = parseFloat(slides[3].value);
+    var slide5 = parseFloat(slides[4].value);
+    if (slide1 > slide2) {
+      var tmp = slide2;
+      slide2 = slide1;
+      slide1 = tmp;
+    }
+    var displayElement = parent.getElementsByClassName("rangeValues")[0];
+    $(document).on("input change", ".inSlider", function() {
+      var scrolled_value = $(this).val();
+      if (this.id == "slider1") {
+        var max_Value = parseInt(slides[1].value);
+      } else if (this.id == "slider2") {
+        var limiting_value = parseInt(slides[0].value);
+        var max_Value = parseInt(slides[2].value);
+      } else if (this.id == "slider3") {
+        var limiting_value = parseInt(slides[1].value);
+        var max_Value = parseInt(slides[3].value);
+      } else if (this.id == "slider4") {
+        var limiting_value = parseInt(slides[2].value);
+        var max_Value = parseInt(slides[4].value);
+      } else if (this.id == "slider5") {
+        var limiting_value = 100;
+      }
+      if (scrolled_value >= max_Value - 5) {
+        $(this).val(max_Value - 5);
+      }
+      if (scrolled_value <= limiting_value + 5) {
+        $(this).val(limiting_value + 5);
+      }
+      var slide1 = parseFloat(slides[0].value);
+      var slide2 = parseFloat(slides[1].value);
+      var slide3 = parseFloat(slides[2].value);
+      var slide4 = parseFloat(slides[3].value);
+      var slide5 = parseFloat(slides[4].value);
+      document.getElementById('label').innerHTML = (slide1 + '% Chicken, ' + parseInt(slide2 - slide1) + "% Ground Beef, " + parseInt(slide3 - slide2) + "% Fish, " + parseInt(slide4 - slide3) + "% Steak Style, " + parseInt(slide5 - slide4) + "% Misc")
+    });
+  }
+  window.onload = function() {
+    // Initialize Sliders
+    var sliderSections = document.getElementsByClassName("range-slider");
+    for (var x = 0; x < sliderSections.length; x++) {
+      var sliders = sliderSections[x].getElementsByTagName("input");
+      for (var y = 0; y < sliders.length; y++) {
+        if (sliders[y].type === "range") {
+          sliders[y].oninput = getVals;
+          // Manually trigger event first time to display values
+          sliders[y].oninput();
+        }
+      }
+    }
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

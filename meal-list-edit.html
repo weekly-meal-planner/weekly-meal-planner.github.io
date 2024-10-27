@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Meal Planner -</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4
+      }
+
+      .navbar {
+        background-color: #333;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 20px
+      }
+
+      .navbar b {
+        color: #000;
+        font-weight: 1;
+        font-size: 200%
+      }
+
+      .navbar a {
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        padding: 8px;
+        font-weight: 700;
+        transition: background-color .3s
+      }
+
+      .navbar .icon {
+        display: none
+      }
+
+      @media screen and (max-width:400px) {
+        .navbar {
+          flex-direction: column;
+          align-items: flex-start
+        }
+
+        .navbar a,
+        b:not(:first-child) {
+          display: none
+        }
+
+        .navbar a.icon {
+          float: right;
+          display: block
+        }
+
+        .navbar.responsive {
+          position: relative
+        }
+
+        .navbar.responsive .icon {
+          position: absolute;
+          right: 0;
+          top: 0
+        }
+
+        .navbar.responsive a {
+          float: none;
+          display: block;
+          text-align: left
+        }
+      }
+
+      h1,
+      h2 {
+        text-align: center
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        font-weight: 700;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+      }
+
+      h1 {
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 20px
+      }
+
+      li {
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        margin: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .1)
+      }
+
+      ul.meal-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      
+
+      .meal-item, .meal-add,.ingredient-add {
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .meal-item{
+        margin: 10px;
+        padding:10px;
+      }
+      .meal-add,.ingredient-add {
+        background-color: #c2fbd7;
+        border-radius: 100px;
+        box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+        color: green;
+        font-size: larger;
+        font-weight: bolder;
+        cursor: pointer;
+        display: inline-block;
+        font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+        padding: 7px 20px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 250ms;
+        border: 0;
+        font-size: 16px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+      }
+
+      .meal-add:hover {
+        box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
+        transform: scale(1.05) rotate(-1deg);
+      }
+      .meal-add{
+        width: 90%;
+      }
+
+      .meal-checkbox {
+        margin-right: 10px
+      }
+
+      .meal-label {
+        font-weight: 700;
+        padding: 10px;
+        width: 80%;
+      }
+
+      #remove-meal {
+        display: block;
+        margin: 30px auto;
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #ff5a5f;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color .3s
+      }
+      .meal-edit{
+        display: flex;
+        margin: 20px;
+        padding: 15px;
+        font-size: 18px;
+        background-color: #ff5a5f;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color .3s;
+      }
+
+      .newList:hover {
+        background-color: #d53f43
+      }
+
+      label {
+        white-space: pre-wrap
+      }
+
+      .meal-label::first-line {
+        font-size: larger;
+        font-weight: 700;
+        color: #ff5a5f
+      }
+
+      #popup-div {
+        background-color: #eff1f3;
+        margin: auto;
+        padding-top: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        border-radius: 5px
+      }
+
+      #popupBack {
+        font-family: RobotoDraft, Roboto, 'Helvetica Neue, Helvetica, Arial', sans-serif;
+        position: fixed;
+        z-index: 1000;
+        padding-top: 70px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: #000;
+        background-color: rgba(0, 0, 0, .4)
+      }
+
+      .grid-container {
+        display: inline-grid;
+        grid-template-columns: auto auto;
+        width: 100%;
+      }
+
+      .grid-item {
+        padding: 5px;
+        text-align: center
+      }
+
+      .ingred-grid-container {
+        display: inline-grid;
+        grid-template-columns: 1;
+        padding: 10px;
+        width: 100%
+      }
+
+      .ingred-grid-item {
+        padding: 5px;
+        text-align: center
+      }
+
+      .dropbtn {
+        background-color: #ff5a5f;
+        color: #fff;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer
+      }
+
+      .dropbtn:focus,
+      .dropbtn:hover {
+        background-color: #d53f43
+      }
+
+      .dropdown {
+        position: relative;
+        display: inline-block
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, .2);
+        z-index: 1
+      }
+
+      .dropdown-content a {
+        color: #000;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ddd
+      }
+      .dropdownContents{
+        background-color: transparent;
+        border: none;
+        font-size: larger;
+        font-weight: bold;
+        width: 100%;
+        white-space: pre-wrap;
+      }
+
+      .show {
+        display: block
+      }
+      #mealTitle{
+        text-align: center;
+      }
+    </style>
+  </head>
+  <script>
+    function toggleMenu() {
+      var a = document.getElementById("myNavbar");
+      "navbar" === a.className ? a.className += " responsive" : a.className = "navbar"
+    }
+  </script>
+  <body>
+    <div class="navbar" id="myNavbar">
+      <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">&#9776;</a>
+      <a href="index.html">Home</a>
+      <b>|</b>
+      <a href="ingredients.html">Ingredients</a>
+      <b>|</b>
+      <a href="meal-list-edit.html">Add/Edit Meal</a>
+      <b>|</b>
+      <a href="shopping.html">Shopping</a>
+    </div>
+    <script>
+      var popupClicked = false
+
+      function generateMeals() {
+        chicken = JSON.parse(localStorage.getItem("chicken"))
+        beef = JSON.parse(localStorage.getItem("beef"))
+        fish = JSON.parse(localStorage.getItem("fish"))
+        steakStyle = JSON.parse(localStorage.getItem("steakStyle"))
+        other = JSON.parse(localStorage.getItem("other"))
+        ingred = JSON.parse(localStorage.getItem("ingred"))
+        allMeals = (chicken + "," + beef + "," + fish + "," + steakStyle + "," + other).split(",")
+        const mealList = document.querySelector(".meal-list");
+        allMeals.forEach(meal => {
+
+          if (localStorage.getItem(meal) == null) {
+            const listItem = document.createElement("li");
+            listItem.className = "meal-item";
+            const label = document.createElement("label");
+            label.className = "meal-label";
+            label.innerHTML = meal + "\r\n" + String(ingred[meal]).replaceAll(",", "   ");
+            const editButton = document.createElement("button")
+            editButton.className = "meal-edit";
+            editButton.innerHTML = "✎"
+            editButton.counter = allMeals.indexOf(meal)
+            editButton.style.position = "absolute"
+            editButton.style.right = "0"
+            editButton.style.padding = "2px"
+            listItem.appendChild(label);
+            listItem.appendChild(editButton)
+            mealList.appendChild(listItem);
+          }
+        })
+        const addMeal = document.createElement("button")
+        addMeal.className = "meal-add"
+        addMeal.id = "meal-add"
+        addMeal.innerHTML = "Add New Meal +"
+        mealList.appendChild(addMeal);
+        addListener()
+      }
+
+      function addListener() {
+        let elementsArray = document.querySelectorAll(".meal-edit");
+        elementsArray.forEach(function(elem) {
+          elem.addEventListener("click", function() {
+            editWindow(elem.counter)
+          });
+        });
+
+        document.getElementById("meal-add").addEventListener("click",function(){
+          editWindow("None")
+        })
+        
+        document.getElementById("popup-div").addEventListener("click", function() {
+          popupClicked = true
+        })
+        document.getElementById("popupBack").addEventListener("click", function() {
+          if (!popupClicked) {
+            document.getElementById("popupBack").style.visibility = "hidden"
+
+
+            //If meal exists, modify either ingredients or type and save to LocalStorage
+            var mealName = document.getElementById("mealTitle").value
+            var mealType = document.getElementById("mealType").innerHTML
+            var ingredientList = document.querySelectorAll(".ingred-item")
+            var ingredientArray = []
+            
+            ingredientList.forEach(list => {
+              if(list.children.item(0).value!="") {
+
+                ingredientArray.push(list.children.item(0).value)
+              }
+            })
+            //Nessisary ^^
+            
+            
+            
+            switch (true) {
+              
+              case chicken.indexOf(mealName) > -1:
+                ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                if(mealType=="Chicken"){
+                  break
+                }
+                
+                chicken.pop(chicken.indexOf(mealName))
+
+                if(mealType=="Beef") {
+                  beef.push(mealName)
+                  localStorage.setItem("beef",JSON.stringify(beef))
+
+                } else if(mealType=="Steak Style") {
+                  steakStyle.push(mealName)
+                  localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+
+                } else if(mealType=="Fish") {
+                  fish.push(mealName)
+                  localStorage.setItem("fish",JSON.stringify(fish))
+
+                } else if(mealType=="Other") {
+                  other.push(mealName)
+                  localStorage.setItem("other",JSON.stringify(other))
+
+                } 
+
+
+                localStorage.setItem("chicken",JSON.stringify(chicken))
+
+                break
+              case beef.indexOf(mealName) > -1:
+              ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                if(mealType=="Beef"){
+                  break
+                }
+                if(mealType=="Chicken") {
+                  chicken.push(mealName)
+                  localStorage.setItem("chicken",JSON.stringify(chicken))
+
+                } else if(mealType=="Steak Style") {
+                  steakStyle.push(mealName)
+                  localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+
+                } else if(mealType=="Fish") {
+                  fish.push(mealName)
+                  localStorage.setItem("fish",JSON.stringify(fish))
+
+                } else if(mealType=="Other") {
+                  other.push(mealName)
+                  localStorage.setItem("other",JSON.stringify(other))
+
+                } 
+
+
+                localStorage.setItem("chicken",JSON.stringify(chicken))
+                break
+              case fish.indexOf(mealName) > -1:
+              ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                if(mealType=="Fish"){
+                  break
+                }
+                
+                if(mealType=="Beef") {
+                  beef.push(mealName)
+                  localStorage.setItem("beef",JSON.stringify(beef))
+
+                } else if(mealType=="Steak Style") {
+                  steakStyle.push(mealName)
+                  localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+
+                } else if(mealType=="Chicken") {                  
+                  chicken.push(mealName)
+                  localStorage.setItem("chicken",JSON.stringify(chicken))
+
+                } else if(mealType=="Other") {
+                  other.push(mealName)
+                  localStorage.setItem("other",JSON.stringify(other))
+
+                } 
+
+
+                localStorage.setItem("chicken",JSON.stringify(chicken))
+                //Remove from other group and add to chicken
+                break
+              case steakStyle.indexOf(mealName) > -1:
+              ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                if(mealType=="Steak Style"){
+                  break
+                }
+                
+                if(mealType=="Beef") {
+                  beef.push(mealName)
+                  localStorage.setItem("beef",JSON.stringify(beef))
+
+                } else if(mealType=="Chicken") {
+                  chicken.push(mealName)
+                  localStorage.setItem("chicken",JSON.stringify(chicken))
+
+                } else if(mealType=="Fish") {
+                  fish.push(mealName)
+                  localStorage.setItem("fish",JSON.stringify(fish))
+
+                } else if(mealType=="Other") {
+                  other.push(mealName)
+                  localStorage.setItem("other",JSON.stringify(other))
+
+                } 
+
+
+                localStorage.setItem("chicken",JSON.stringify(chicken))
+                //Remove from other group and add to chicken
+                break  
+              case other.indexOf(mealName) > -1:
+                ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                if(mealType=="Other"){
+                  break
+                }
+                
+                if(mealType=="Beef") {
+                  beef.push(mealName)
+                  localStorage.setItem("beef",JSON.stringify(beef))
+
+                } else if(mealType=="Steak Style") {
+                  steakStyle.push(mealName)
+                  localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+
+                } else if(mealType=="Fish") {
+                  fish.push(mealName)
+                  localStorage.setItem("fish",JSON.stringify(fish))
+
+                } else if(mealType=="Chicken") {
+                  chicken.push(mealName)
+                  localStorage.setItem("chicken",JSON.stringify(chicken))
+
+                } 
+
+
+                localStorage.setItem("chicken",JSON.stringify(chicken))
+                //Remove from other group and add to chicken
+                break 
+
+              case true:
+
+
+                //Add meal name to proper category
+                if(mealType=="Chicken") {
+                  chicken.push(mealName)
+                  localStorage.setItem("chicken",JSON.stringify(chicken))
+                } else if(mealType=="Beef") {
+                  beef.push(mealName)
+                  localStorage.setItem("beef",JSON.stringify(beef))
+
+                } else if(mealType=="Steak Style") {
+                  steakStyle.push(mealName)
+                  localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+
+                } else if(mealType=="Fish") {
+                  fish.push(mealName)
+                  localStorage.setItem("fish",JSON.stringify(fish))
+
+                } else if(mealType=="Other") {
+                  other.push(mealName)
+                  localStorage.setItem("other",JSON.stringify(other))
+
+                } else {
+                  //Does not have a type, add to end of list
+                  alert("Does not have a meal type!")
+                }
+
+                ingred[mealName] = ingredientArray
+                localStorage.setItem("ingred",JSON.stringify(ingred))
+                //add meal to ingredient list
+
+                
+                break
+            }
+
+            window.location.reload()
+          }
+          popupClicked = false
+        })
+
+        function editWindow(mealIndex) {
+          var meal = allMeals[mealIndex]
+
+          document.getElementById("popupBack").style.visibility = "visible"
+          document.getElementById("internalList").innerHTML = ""
+
+
+          if(mealIndex=="None") {
+            document.getElementById("mealTitle").value = ""
+          } else {
+            document.getElementById("mealTitle").value = meal
+          }
+
+          const ingredList = document.querySelector(".ingred-list");
+          if(meal) {
+          ingred[meal].forEach(ingred => {
+          
+              const ingredItem = document.createElement("li");
+              ingredItem.className = "ingred-item";
+              const ingredLabel = document.createElement("input");
+
+
+              
+              ingredLabel.type = "text";
+              ingredLabel.style.textAlign = "center";
+              ingredLabel.style.border = "none";
+              ingredLabel.style.width = "100%";
+              ingredLabel.className = "ingred-label";
+              ingredLabel.className = "ingred-grid-item";
+
+              ingredLabel.value = ingred
+              ingredItem.appendChild(ingredLabel);
+              ingredList.appendChild(ingredItem);
+            })
+          }
+            const ingredAdd = document.createElement("button");
+            ingredAdd.className = "ingredient-add";
+            ingredAdd.id = "ingredient-add";
+              ingredAdd.innerHTML = "Add New Ingredient +"
+            ingredList.appendChild(ingredAdd);
+
+
+
+            document.getElementById("ingredient-add").addEventListener("click",function(){
+              
+
+              const ingredItem = document.createElement("li");
+              ingredItem.className = "ingred-item";
+
+              const newIngredient = document.createElement("input")
+              newIngredient.type = "text"
+              newIngredient.style.textAlign = "center";
+              newIngredient.style.border = "none";
+              newIngredient.style.width = "80%";
+              newIngredient.className = "ingred-label";
+              newIngredient.className = "ingred-grid-item";
+              ingredItem.prepend(newIngredient)
+              ingredList.prepend(ingredItem)
+        })
+          if (chicken.indexOf(allMeals[mealIndex]) > -1) {
+            document.getElementById("mealType").innerHTML = "Chicken"
+          } else if (beef.indexOf(allMeals[mealIndex]) > -1) {
+            document.getElementById("mealType").innerHTML = "Beef"
+          } else if (fish.indexOf(allMeals[mealIndex]) > -1) {
+            document.getElementById("mealType").innerHTML = "Fish"
+          } else if (steakStyle.indexOf(allMeals[mealIndex]) > -1) {
+            document.getElementById("mealType").innerHTML = "Steak Style"
+          } else if (other.indexOf(allMeals[mealIndex]) > -1) {
+            document.getElementById("mealType").innerHTML = "Other"
+          }
+        }
+      }
+      
+
+
+      function changeText(typeName) {
+        document.getElementById("mealType").innerHTML = typeName
+      }
+
+      function typeDropFunc() {
+        document.getElementById("typeDropdown").classList.toggle("show");
+      }
+
+      var verifyCount = 0
+      function verifyDelete() {
+        var mealName = document.getElementById("mealTitle").value
+        document.getElementById("remove-meal").innerHTML = "Are you sure?"
+        verifyCount++
+        if(verifyCount>1){
+
+          if(beef.indexOf(mealName)>0) {
+            beef.pop(beef.indexOf(mealName))
+            delete ingred[mealName]
+            localStorage.setItem("beef",JSON.stringify(beef))
+            localStorage.setItem("ingred",JSON.stringify(ingred))
+
+          } else if(chicken.indexOf(mealName) > 0) {
+
+            chicken.pop(chicken.indexOf(mealName))
+            delete ingred[mealName]
+            localStorage.setItem("chicken",JSON.stringify(chicken))
+            localStorage.setItem("ingred",JSON.stringify(ingred))
+
+          } else if(fish.indexOf(mealName) > 0) {
+            fish.pop(fish.indexOf(mealName))
+            delete ingred[mealName]
+            localStorage.setItem("fish",JSON.stringify(fish))
+            localStorage.setItem("ingred",JSON.stringify(ingred))
+
+          } else if(other.indexOf(mealName) > 0) {
+            other.pop(other.indexOf(mealName))
+            delete ingred[mealName]
+            localStorage.setItem("other",JSON.stringify(other))
+            localStorage.setItem("ingred",JSON.stringify(ingred))
+          } else if(steakStyle.indexOf(mealName) > 0) {
+            steakStyle.pop(steakStyle.indexOf(mealName))
+            delete ingred[mealName]
+            localStorage.setItem("steakStyle",JSON.stringify(steakStyle))
+            localStorage.setItem("ingred",JSON.stringify(ingred))
+          }
+          window.location.reload()
+
+          verifyCount = 0
+          document.getElementById("remove-meal").innerHTML = "Remove Meal"
+
+        }
+
+        
+
+      }
+      
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+
+
+
+
+    </script>
+    <h1>Meal Planner</h1>
+    <h2>Meal List</h2>
+    <div id="popupBack" style="visibility:hidden">
+      <div id="popup-div">
+        <div class="grid-container">
+          <div class="grid-item">
+            <h2>
+              <u>Meal</u>
+            </h2>
+            <input type="text" placeholder="Click to Edit" id="mealTitle" style="font-size:large;font-weight: bold;border: none;width: 80%;"></h2>
+
+          </div>
+          <div class="grid-item">
+            <h2>
+              <u>Meal Type</u>
+            </h2>
+            <div class="dropdown">
+              <button onclick="typeDropFunc()" class="dropbtn" id="mealType">Dropdown</button>
+              <div id="typeDropdown" class="dropdown-content">
+                <button class="dropdownContents" onclick="changeText('Chicken')">Chicken</button>
+                <button class="dropdownContents" onclick="changeText('Beef')">Beef</button>
+                <button class="dropdownContents" onclick="changeText('Fish')">Fish</button>
+                <button class="dropdownContents" onclick="changeText('Steak Style')">Steak Style</button>
+                <button class="dropdownContents" onclick="changeText('Other')">Other</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ingred-grid-container">
+          <div class="ingred-grid-item">
+            <ul class="ingred-list" id="internalList" class="ingred-grid-item">
+
+
+            </ul>
+          </div>
+        </div>
+        <button id="remove-meal" class="grid-item" onclick="verifyDelete()">
+          Remove Meal
+        </button>
+      </div>
+    </div>
+    <ul class="meal-list" id="menu"></ul>
+    <body onload="generateMeals()"></body>
+  </body>
+</html>
